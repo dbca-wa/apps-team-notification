@@ -1,4 +1,4 @@
-FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu_2604_base_python as builder_base_bfrs
+FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu_2604_base_python as builder_base
 ARG IMAGE_TAG
 ARG IMAGE_NAME
 # FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu_2404_base_python as builder_base_bfrs
@@ -36,7 +36,7 @@ RUN chown -R oim:oim /app
 ENV TZ=Australia/Perth
 
 # Install Python libs from requirements.txt.
-FROM builder_base_bfrs as python_libs_bfrs
+FROM builder_base as python_libs
 WORKDIR /app
 USER oim
 # RUN virtualenv -p python3 /app/venv
@@ -47,12 +47,12 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install the project (ensure that frontend projects have been built prior to this step).
-FROM python_libs_bfrs
+FROM python_libs
 COPY --chown=oim:oim  python-cron ./
 COPY --chown=oim:oim  startup.sh /
 RUN chmod 755 /startup.sh
 COPY gunicorn.ini manage.py ./
-COPY bfrs_api_wrapper ./bfrs_api_wrapper
+COPY notification ./notification
 # NOTE: we can't currently run the collectstatic step due to how BFRS is written.
 # Always be sure to run collectstatic locally prior to building the image.
 RUN touch /app/.env
