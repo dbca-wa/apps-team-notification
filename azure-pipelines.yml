@@ -67,7 +67,7 @@ stages:
     # 6. Push Dev Image tags
     - bash: |
         docker push $(devImageName):apps_team_notification_dev_latest
-        docker push $(devImageName):apps_team_notification_$(tagDate)-$(shortSha)
+        docker push $(devImageName):apps_team_notification_dev_$(tagDate)-$(shortSha)
       displayName: 'Push Dev Image'
 
     # 7. Purge images
