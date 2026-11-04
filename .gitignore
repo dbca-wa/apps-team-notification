@@ -1,0 +1,58 @@
+# Basics
+*.py[cod]
+*.pyc
+__pycache__
+
+# Pycharm
+.idea
+
+# Eclipse
+.project
+.pydevproject
+.settings
+
+# Vim
+*~
+*.swp
+*.swo
+
+# npm
+node_modules/
+
+# logs
+log/
+logs/
+*.log
+
+# tmp
+tmp/
+
+# db/
+db/
+
+# Environment settings
+.env*
+
+# Static files dirs
+/static/
+/media/
+staticfiles/
+
+# everything with local in it
+*local/
+
+# Virtualenv dir
+/venv
+
+# Testing coverage
+.coverage
+
+# pgdump
+*.pgdump
+
+#uwsgi config file
+uwsgi.ini
+
+localtest.*
+
+fireboundaries/

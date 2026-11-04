@@ -1,0 +1,154 @@
+<html >
+<body style='background-color: #e6e6e6;padding:10px;'>
+
+<div style='background-color: #FFFFFF; padding:20px;'>
+    <table bgcolor='#FFFFFF' cellpadding="0" cellspacing="0" style="padding:20px">
+    <tr><td>
+    <div><img src="{% include "notification/email/dbca_logo_base64_img.html"%}" style='height:100px'></div>
+
+    <h2 style="font-size: 26px; vertical-align: baseline; clear: both; color: #222 !important; margin: 20px 0 4px; padding: 0; border: 0">Applications Team IT Checks</h2>    
+    {% if checks.monitor_status.time_differnce_last_job > 15 %}
+    <br>
+    <table style="width:100%"  cellpadding="0" cellspacing="0">
+        <tr>
+            <td style='text-align: left; margin: 0; padding: 6px 4px; font-weight: bold; color: #FFFFFF;background-color: #dc3545; border-color: #dc3545; ' >
+                ERROR: The sensor job has not run in {{checks.monitor_status.time_differnce_last_job}} minutes.
+            </td>
+        </tr>
+    </table>    
+    {% endif %}
+    <br>
+    <table style="width:100%"  cellpadding="0" cellspacing="0">
+        <thead class='table-dark'>
+            <tr>
+                <th style="font-weight: bold; text-align: left; color: #FFFFFF; background-color: #222; margin: 0; padding: 6px 4px; border: 1px solid #474747;">Current Server Time</th>   
+                <th style="font-weight: bold; text-align: left; color: #FFFFFF; background-color: #222; margin: 0; padding: 6px 4px; border: 1px solid #474747;">Last Sensor Time</th>                
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">
+                    {{ checks.monitor_status.current_time }}
+                </td>
+                <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">
+                    {{ checks.monitor_status.last_job_run }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 style="font-size: 20px; vertical-align: baseline; clear: both; color: #222 !important; margin: 20px 0 4px; padding: 0; border: 0">Automated Checks</h3>
+    <p>Below is a list of automated checks.  If any of these systems are reporting issues then please follow the incident reporting instructions found within the dev azure wiki.</p>
+
+
+<table style="width:100%; margin-bottom: 3px;"  cellpadding="0" cellspacing="0">
+    <td><b>Response Type (RT)</b> <span style="border: 1px solid #000; color: #FFF;padding: 2px;">☎️</span> = <span>On Call</span> <span style="border: 1px solid #000; color: #FFF; padding: 2px;">🕘</span> = <span>Business Hours</span></td>
+</table>
+
+<table style="width:100%"  cellpadding="0" cellspacing="0">
+    <thead class='table-dark'>
+        <tr>
+            <th style="font-weight: bold; text-align: left; color: #FFFFFF; background-color: #222; margin: 0; padding: 6px 4px; border: 1px solid #474747;">Status</th>               
+            <th style="font-weight: bold; text-align: left; color: #FFFFFF; background-color: #222; margin: 0; padding: 6px 4px; border: 1px solid #474747;">RT</th>
+            <th style="font-weight: bold; text-align: left; color: #FFFFFF; background-color: #222; margin: 0; padding: 6px 4px; border: 1px solid #474747;">Check Name</th>            
+            <th style="font-weight: bold; text-align: left; color: #FFFFFF; background-color: #222; margin: 0; padding: 6px 4px; border: 1px solid #474747;">Help URL</th>
+            <th style="font-weight: bold; text-align: left; color: #FFFFFF; background-color: #222; margin: 0; padding: 6px 4px; border: 1px solid #474747;">Responsible Group</th>                                             
+            <th style="font-weight: bold; text-align: left; color: #FFFFFF; background-color: #222; margin: 0; padding: 6px 4px; border: 1px solid #474747;">Last Status Change</th>            
+        </tr>
+    </thead>
+    <tbody >
+        {% if checks.monitors|length > 0 %}
+            {% for check in checks.monitors %}        
+                {% if check.status == 0 %}
+                    <tr>
+                        <td style='text-align: center; font-weight: bold; color: #FFFFFF; background-color: #6c757d;border-color: #6c757d; border: 1px solid #6c757d;' >UNKOWWN</td>                        
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc; text-align: center; ">{% if check.businesshours is True %}🕘{% else %}☎️{% endif %}</td>  
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.name }}</td>                        
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{% if check.url %}<a href='{{ check.url }}'> <img src='{% include "notification/email/email_button_open_url.html"%}'></a>{% endif %}</td>
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.responsible_group }}</td>
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.lastcheck }} </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            {% for check in checks.monitors %} 
+                {% if check.status == 1 %}
+                    <tr>
+                        <td style='text-align: center; margin: 0; padding: 6px 4px; font-weight: bold; color: #FFFFFF;background-color: #dc3545; border-color: #dc3545; ' >DOWN </td>
+                        
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc; text-align: center; ">{% if check.businesshours is True %}🕘{% else %}☎️{% endif %}</td>  
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.name }}<br> <i style="font-size: 12px;">{{ check.message }}</i></td>
+                        
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{% if check.url %}<a href='{{ check.url }}'> <img src='{% include "notification/email/email_button_open_url.html"%}'></a>{% endif %}</td>
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.responsible_group }}</td>
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.lastcheck }} {{ check.downtimesince }}</td>
+                    </tr>
+                {% endif %}
+
+            {% endfor %}
+            {% for check in checks.monitors %} 
+                
+                {% if check.status == 2 %}
+                    <tr>
+                        <td style='text-align: center; margin: 0; padding: 6px 4px; font-weight: bold; color: #FFFFFF;background-color: #ffc107;border-color: #ffc107; ' >WARN</td>
+                        
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc; text-align: center; ">{% if check.businesshours is True %}🕘{% else %}☎️{% endif %}</td>  
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.name }}<br> <i style="font-size: 12px;">{{ check.message }}</i></td>
+                        
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{% if check.url %}<a href='{{ check.url }}'> <img src='{% include "notification/email/email_button_open_url.html"%}'></a>{% endif %}</td>
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.responsible_group }}</td>
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.lastcheck }}</td>                      
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            {% for check in checks.monitors %} 
+                {% if check.status == 4 %}
+                    <tr>
+                        <td  style='text-align: center;  collapse; margin: 0; padding: 6px 4px;font-weight: bold; color: #FFFFFF;background-color: #2f8bc9; border-color: #198754;' >Paused</td>
+                        
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc; text-align: center; ">{% if check.businesshours is True %}🕘{% else %}☎️{% endif %}</td>  
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.name }}<br> <i style="font-size: 12px;">{{ check.message }}</i></span></td>
+                        
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{% if check.url %}<a href='{{ check.url }}'> <img src='{% include "notification/email/email_button_open_url.html"%}'></a>{% endif %}</td>
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.responsible_group }}</td>
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.lastcheck }}</td>                         
+                    </tr>
+                {% endif %}
+            {% endfor %}   
+            {% for check in checks.monitors %} 
+                {% if check.status == 3 %}
+                    <tr>
+                        <td  style='text-align: center;  collapse; margin: 0; padding: 6px 4px;font-weight: bold; color: #FFFFFF;background-color: #198754; border-color: #198754;' >UP </td>
+                        
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc; text-align: center; ">{% if check.businesshours is True %}🕘{% else %}☎️{% endif %}</td>  
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.name }}</span></td>
+                        
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{% if check.helpdoc is True %}<a href='{{ settings.HELP_DOC_URL }}/{{ check.helpdocid }}'> <img src='{% include "notification/email/email_button_open_url.html"%}'></a>{% endif %}</td>
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.responsible_group }}</td>
+                        <td style="font-weight: normal; text-align: left; margin: 0; padding: 6px 4px; border: 1px solid #cccccc;">{{ check.lastcheck }}</td>                         
+                    </tr>
+                {% endif %}
+            {% endfor %}
+         
+        {% else %}
+            <tr>
+                <td colspan="5" class='text-center'>No Results</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<br>
+<p><i>
+This is an automated system generated notification.
+</i>
+<br>
+{% if settings.APP_URL %}System URL: <a href='{{ settings.APP_URL }}'>{{ settings.APP_URL }}</a>{% endif %} {% if settings.SYSTEM_DOCS_URL %}|  <a href='{{ settings.SYSTEM_DOCS_URL }}'>System Docs</a>{% endif %}
+</p>
+<br>
+
+
+</td>
+</tr>
+</table>
+</body>
+</html>

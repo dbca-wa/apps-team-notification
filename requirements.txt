@@ -1,0 +1,5 @@
+Django~=5.2.8
+django-extensions==1.7.6
+requests~=2.33.0
+python-decouple==3.8
+git+https://github.com/dbca-wa/wagov_utils.git#egg=wagov_utils

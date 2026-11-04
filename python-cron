@@ -1,0 +1,2 @@
+30 6 * * * python /app/manage.py send_prtg_appsteam_itchecks >> /app/logs/send_prtg_appsteam_itchecks.log 2>&1
+00 8 * * * python /app/manage.py send_prtg_appsteam_itchecks >> /app/logs/send_prtg_appsteam_itchecks.log 2>&1
