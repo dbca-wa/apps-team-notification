@@ -36,7 +36,7 @@ class Command(BaseCommand):
             settings.PRTG_HOST + "/api/table.json",
             params = {
                 "content": "sensors",
-                "columns": "objid,downtimesince,device,sensor,sensortype,lastvalue,status,message,priority,comments, tags, active, lastcheck,lastvalue ",
+                "columns": "objid,downtimesince,device,sensor,sensortype,lastvalue,status,message,priority,comments, tags, active, lastcheck,lastvalue",
                 "filter_status": ["3","4", "5", "10", "13","14","7","8","9", "11", "12"],
                 # "filter_status": ["5"],
                 "id": "15142",
@@ -66,7 +66,7 @@ class Command(BaseCommand):
             settings.PRTG_HOST + "/api/table.json",
             params = {
                 "content": "sensors",
-                "columns": "objid,downtimesince,device,sensor,sensortype,lastvalue,status,message,priority,comments, tags, active, lastcheck,lastvalue ",
+                "columns": "objid,downtimesince,device,sensor,sensortype,lastvalue,status,message,priority,comments, tags, active, lastcheck,lastvalue,url",
                 "filter_status": ["3","4", "5", "10", "13","14","7","8","9", "11", "12"],
                 # "filter_status": ["5"],
                 "id": "15142",
@@ -80,6 +80,31 @@ class Command(BaseCommand):
         checks = {"monitors" :[], "monitor_status": {"last_job_run": formatted_last_sensor, "time_differnce_last_job": difference_minutes, "current_time" : formatted_now}}
         json_data = r.json()        
         for i in json_data['sensors']:
+           
+            url = None
+            try:
+                url_response = requests.get(
+                    settings.PRTG_HOST + "/api/getobjectproperty.htm",
+                    params={
+                        "id": i['objid'],
+                        "name": "httpurl",
+                        "show": "text",
+                        "username": username,
+                        "passhash": passhash,
+                        
+                    },
+                    verify=False
+                )            
+                match = re.search(r"<result>(.*?)</result>", url_response.text, re.DOTALL)
+                url = match.group(1).strip() if match else None
+                if "http:" in url or "https:" in url:
+                    pass
+                else:
+                    url = None
+            except Exception as e:
+                print (e)
+
+            
             itcheck = True
             #if i['status'] != "Up" and i['status'] != "Down" and i['status'] != "Paused" and i['status'] != "Paused  (paused by parent)" and i['status'] != "Paused  (paused)" and i['status'] != "Warning":
                 # print (i)
@@ -107,7 +132,6 @@ class Command(BaseCommand):
             row["mon_type"] = i['sensor']
             row["message"] = i['message_raw']
             row["helpdoc"] = False
-
 
 
             match = re.search(r'\bnoitcheck\b', i["tags"])            
@@ -140,6 +164,7 @@ class Command(BaseCommand):
 
             if itcheck is True:
                 checks["monitors"].append(row)  
+            row["url"] = url
         # print (r.text)
 
         t = email_templates.AppCheckList()
