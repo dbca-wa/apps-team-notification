@@ -152,7 +152,7 @@ class Command(BaseCommand):
             # Response Type End
 
             row["responsible_group"] = "Application Team"
-            match = re.search(r'\bteam-infra\d+\b', i["tags"])            
+            match = re.search(r'\bteam-infra\b', i["tags"])            
             if match:                          
                 responsible_group = match.group(0)                
                 row["responsible_group"] = "Infrastructure Team" 
